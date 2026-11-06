@@ -1,0 +1,1553 @@
+:root {
+    --bg: #041413;
+    --surface: #08201e;
+    --line: #12302d;
+    --text: #ffffff;
+    --muted: #b9c9c6;
+    --green: #22e0a0;
+    --green-dark: #0b3d33;
+    --card: #ffffff;
+    --ink: #0e1a19;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+}
+
+.container {
+    width: min(1240px, 90%);
+    margin: 0 auto;
+}
+
+/* ---------- NAVBAR ---------- */
+.navbar {
+    padding: 16px 0;
+}
+
+.nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.logo svg {
+    color: var(--green);
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px;
+    margin-right: auto;
+    margin-left: 80px;
+}
+
+.nav-links a {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 8px 0;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-links a.active {
+    border-color: var(--green);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--text);
+    display: grid;
+    place-items: center;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--green);
+    color: #032b22;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.08);
+}
+
+.btn-outline {
+    background: transparent;
+    border-color: #2a4743;
+    color: var(--text);
+}
+
+.btn-dark {
+    background: var(--surface);
+    border-color: var(--line);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 12px 18px;
+}
+
+.btn-block {
+    width: 100%;
+    padding: 12px;
+}
+
+/* ---------- HERO ---------- */
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    padding: 20px 0 60px;
+    align-items: start;
+}
+
+.city {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.city svg {
+    color: var(--green);
+}
+
+.link-btn {
+    background: none;
+    border: none;
+    color: var(--green);
+    font-size: 0.85rem;
+    text-decoration: underline;
+}
+
+h1 {
+    font-size: clamp(2.4rem, 5vw, 3.2rem);
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.accent {
+    color: var(--green);
+}
+
+.lead {
+    margin: 18px 0 22px;
+    font-size: 0.95rem;
+    max-width: 430px;
+}
+
+/* Ride card */
+.ride-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 10px;
+    max-width: 490px;
+}
+
+.field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f4f6f6;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    color: var(--ink);
+}
+
+.field-icon {
+    color: var(--ink);
+    flex-shrink: 0;
+}
+
+.field-icon.green {
+    color: var(--green);
+}
+
+.field-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.field-label {
+    font-size: 0.7rem;
+    color: #6b7a78;
+}
+
+.field input {
+    border: none;
+    background: transparent;
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+}
+
+.field input::placeholder {
+    color: #5b6a68;
+}
+
+.field-btn {
+    background: none;
+    border: none;
+    color: var(--ink);
+    display: grid;
+    place-items: center;
+    padding: 4px;
+}
+
+.form-msg {
+    color: #b3261e;
+    font-size: 0.8rem;
+    padding: 8px 4px 0;
+    min-height: 0;
+}
+
+.form-msg:empty {
+    padding: 0;
+}
+
+.form-msg.ok {
+    color: #0b7a5a;
+}
+
+.hero-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+}
+
+.text-link svg {
+    color: var(--green);
+}
+
+/* Gallery */
+.hero-gallery {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    grid-template-rows: repeat(3, 1fr);
+    gap: 14px;
+    height: 420px;
+    margin-top: 10px;
+}
+
+.photo {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+
+.photo-city {
+    grid-row: 1 / 4;
+    background-image: linear-gradient(180deg, #f1a37a 0%, #b58aa6 35%, #3a6f8f 65%, #1d4a3a 100%);
+}
+
+.photo-safe {
+    background-image: linear-gradient(135deg, #2b4a45, #6f8f6a);
+}
+
+.photo-reliable {
+    background-image: linear-gradient(135deg, #5d7a76, #c9d3cf);
+}
+
+.photo-affordable {
+    background-image: linear-gradient(135deg, #7a5a3d, #3c5a4a);
+}
+
+/* To use real photos, replace the gradients above, for example:
+   .photo-city { background-image: url("images/city.jpg"); } */
+
+.tag {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(4, 20, 19, 0.85);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.shield {
+    width: 16px;
+    height: 18px;
+    background: var(--green);
+    clip-path: polygon(50% 0, 100% 15%, 100% 55%, 50% 100%, 0 55%, 0 15%);
+}
+
+/* ---------- HOW IT WORKS ---------- */
+.how,
+.help {
+    border-top: 1px solid var(--line);
+}
+
+.how {
+    padding: 36px 0 40px;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.sub {
+    font-size: 0.85rem;
+    margin: 4px 0 24px;
+}
+
+.carousel {
+    overflow: hidden;
+}
+
+.track {
+    display: flex;
+    transition: transform 0.45s ease;
+}
+
+.steps-page {
+    flex: 0 0 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.step-media {
+    position: relative;
+    height: 170px;
+    margin-bottom: 18px;
+}
+
+.step-img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 36px;
+    left: 60px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+}
+
+.img-1 {
+    background-image: linear-gradient(135deg, #3b3a36, #8a8f8c);
+}
+
+.img-2 {
+    background-image: linear-gradient(135deg, #2f4a3a, #8a7f6a);
+}
+
+.img-3 {
+    background-image: linear-gradient(135deg, #1b2b2a, #4f7a3a);
+}
+
+.img-4 {
+    background-image: linear-gradient(135deg, #7a4a2d, #c9a27a);
+}
+
+.img-5 {
+    background-image: linear-gradient(135deg, #2f5a2a, #8ab06a);
+}
+
+/* To use real photos: .img-1 { background-image: url("images/step1.jpg"); } */
+
+.icon-tile {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 84px;
+    height: 84px;
+    background: #fff;
+    color: var(--ink);
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+}
+
+.step h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #032b22;
+    display: grid;
+    place-items: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step p {
+    font-size: 0.9rem;
+    max-width: 300px;
+    color: var(--muted);
+}
+
+.carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 24px;
+}
+
+#pageCount {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.round-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: #e8f5f1;
+    color: var(--ink);
+    font-size: 1.6rem;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    padding-bottom: 3px;
+}
+
+.round-btn:hover:not(:disabled) {
+    background: var(--green);
+}
+
+.round-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* ---------- HELP CENTER ---------- */
+.help {
+    padding: 40px 0 50px;
+}
+
+.help-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.help-title:hover {
+    color: var(--green);
+}
+
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-top: 60px;
+}
+
+.help-col h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+.help-col li {
+    margin-bottom: 14px;
+    font-size: 0.9rem;
+}
+
+.help-col a:hover {
+    color: var(--green);
+}
+
+.help-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.socials {
+    display: flex;
+    gap: 2px;
+}
+
+.socials a {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    background: var(--surface);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.socials a:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+.socials a:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.socials a:hover {
+    color: var(--green);
+}
+
+.pills {
+    display: flex;
+    gap: 6px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.pill svg {
+    color: var(--green);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 960px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-gallery {
+        height: 360px;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .nav-actions {
+        margin-left: auto;
+    }
+
+    .steps-page {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .help-grid {
+        grid-template-columns: 1fr 1fr;
+        margin-top: 40px;
+    }
+}
+
+@media (max-width: 560px) {
+    .hero-gallery {
+        grid-template-columns: 1fr;
+        grid-template-rows: 220px repeat(3, 120px);
+        height: auto;
+    }
+
+    .photo-city {
+        grid-row: auto;
+    }
+
+    .steps-page {
+        grid-template-columns: 1fr;
+    }
+
+    .help-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .track {
+        transition: none;
+    }
+}
+
+/* ---------- APP PAGE (logged in): add this at the bottom of style.css ---------- */
+
+/* person icon inside the dropdown button */
+.user-avatar {
+    color: var(--green);
+}
+
+/* hero */
+.app-hero {
+    padding: 56px 0 48px;
+}
+
+.app-welcome {
+    margin-bottom: 12px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.app-hero h1 {
+    max-width: 14ch;
+    margin-bottom: 14px;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    line-height: 1.05;
+    font-weight: 800;
+}
+
+.app-lead {
+    margin-bottom: 32px;
+    color: var(--muted);
+    font-size: 1.05rem;
+}
+
+/* pickup and dropoff row */
+.app-ride-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    max-width: 960px;
+}
+
+.app-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: text;
+}
+
+.app-field:focus-within {
+    border-color: var(--green);
+}
+
+.app-field-icon {
+    flex: none;
+    color: var(--text);
+}
+
+.app-field-icon.green {
+    color: var(--green);
+}
+
+.app-field-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.app-field-label {
+    color: var(--muted);
+    font-size: 0.72rem;
+}
+
+.app-field input {
+    width: 100%;
+    padding: 2px 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.app-field input::placeholder {
+    color: var(--muted);
+}
+
+.app-field-btn {
+    flex: none;
+    display: grid;
+    place-items: center;
+    padding: 4px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.app-field-btn:hover {
+    color: var(--text);
+}
+
+.app-submit {
+    padding: 0 28px;
+    font-size: 0.95rem;
+}
+
+/* sections */
+.app-section {
+    padding: 40px 0;
+    border-top: 1px solid var(--line);
+}
+
+.app-title {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.app-sub {
+    margin-bottom: 24px;
+    color: var(--muted);
+}
+
+/* ways to ride */
+.app-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.app-step {
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+}
+
+.app-step-num {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #032b22;
+    font-weight: 700;
+}
+
+.app-step h3 {
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.app-step p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+/* tabs */
+.app-tabs {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+}
+
+.app-tab {
+    padding: 10px 0;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.app-tab.active {
+    border-color: var(--green);
+    color: var(--text);
+}
+
+/* list, map, feature card */
+.app-journey {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr 1fr;
+    gap: 20px;
+}
+
+.app-list {
+    margin: 0;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    list-style: none;
+}
+
+.app-list[hidden] {
+    display: none;
+}
+
+.app-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+}
+
+.app-list li:hover {
+    background: var(--line);
+}
+
+.app-empty {
+    color: var(--muted);
+}
+
+.app-go {
+    padding: 6px 16px;
+    border: 1px solid #2a4743;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.app-go:hover {
+    border-color: var(--green);
+}
+
+.app-feature .app-go {
+    border: 0;
+    border-radius: 10px;
+    background: var(--green);
+    color: #032b22;
+    padding: 10px 18px;
+}
+
+.app-map {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--green-dark);
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.app-map small {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.app-feature {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+}
+
+.app-feature h3 {
+    font-size: 1.05rem;
+}
+
+.app-feature p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.app-feature .app-go {
+    align-self: flex-start;
+}
+
+/* help center */
+.app-help {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.app-help h3 {
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.app-help a {
+    display: block;
+    padding: 4px 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.app-help a:hover {
+    color: var(--text);
+}
+
+/* footer */
+.app-footer {
+    margin-top: 24px;
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+}
+
+.app-footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.app-footer p {
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+/* phones and small tablets */
+@media (max-width: 860px) {
+    .nav-links {
+        display: none;
+    }
+
+    .app-ride-bar,
+    .app-steps,
+    .app-journey,
+    .app-help {
+        grid-template-columns: 1fr;
+    }
+
+    .app-submit {
+        padding: 14px;
+    }
+}
+
+/* ---------- TRIPS PAGE: add this at the bottom of style.css ---------- */
+
+.trips-page {
+    min-height: 80vh;
+    padding: 48px 0 80px;
+    background:
+        radial-gradient(60% 50% at 100% 100%, rgba(34, 224, 160, 0.22), transparent 70%),
+        radial-gradient(40% 30% at 100% 55%, rgba(34, 224, 160, 0.08), transparent 70%);
+}
+
+.trips-inner {
+    max-width: 1100px;
+}
+
+.trips-title {
+    margin-bottom: 28px;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+}
+
+/* tabs */
+.trips-tabs {
+    display: flex;
+    gap: 36px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+}
+
+.trips-tab {
+    padding: 12px 4px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.trips-tab.active {
+    border-color: var(--green);
+    color: var(--green);
+    font-weight: 600;
+}
+
+.trips-tab:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+}
+
+.trips-msg {
+    margin-bottom: 16px;
+    color: var(--muted);
+}
+
+.trips-msg:empty {
+    display: none;
+}
+
+/* rows */
+.trips-list {
+    display: grid;
+    gap: 14px;
+}
+
+.trip-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 22px 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(8, 32, 30, 0.7);
+}
+
+.trip-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--green-dark);
+    color: var(--text);
+}
+
+.trip-when {
+    margin-bottom: 6px;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.trip-route {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.trip-fare {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.trip-status {
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: var(--line);
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.trip-status.status-completed {
+    background: var(--green);
+    color: #032b22;
+}
+
+.trip-status.status-cancelled {
+    background: #3a1f24;
+    color: #ff8a8a;
+}
+
+/* phones */
+@media (max-width: 700px) {
+    .trip-row {
+        grid-template-columns: auto 1fr;
+        row-gap: 12px;
+    }
+
+    .trip-fare {
+        grid-column: 2;
+    }
+
+    .trip-status {
+        grid-column: 2;
+        justify-self: start;
+    }
+}
+
+/* ---------- RIDE PAGE: add this at the bottom of style.css ---------- */
+
+.rp-layout {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 24px;
+    align-items: start;
+    padding: 24px 0 64px;
+}
+
+/* the form card */
+.rp-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--bg);
+}
+
+.rp-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.rp-title svg {
+    color: var(--green);
+}
+
+/* white input boxes, like the design */
+.rp-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 16px;
+    min-height: 56px;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--ink);
+}
+
+.rp-field:focus-within {
+    border-color: var(--green);
+}
+
+.rp-icon {
+    flex: none;
+    color: var(--ink);
+}
+
+.rp-field input,
+.rp-field select {
+    flex: 1;
+    min-width: 0;
+    height: 52px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.98rem;
+    font-weight: 500;
+}
+
+.rp-field input::placeholder {
+    color: #5b6b69;
+}
+
+.rp-field select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 28px;
+    cursor: pointer;
+}
+
+/* the open list of a select uses the browser's own colours, keep text readable */
+.rp-field select option {
+    color: var(--ink);
+    background: #ffffff;
+}
+
+.rp-chev {
+    position: absolute;
+    right: 16px;
+    color: var(--ink);
+    pointer-events: none;
+}
+
+.rp-icon-btn {
+    flex: none;
+    display: grid;
+    place-items: center;
+    padding: 4px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.rp-icon-btn:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+}
+
+.rp-search {
+    margin-top: 6px;
+    min-height: 56px;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+/* the empty map area, filled by the backend later */
+.rp-map {
+    min-height: 620px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--green-dark);
+    overflow: hidden;
+}
+
+/* tablets and phones */
+@media (max-width: 960px) {
+    .rp-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .rp-map {
+        min-height: 360px;
+    }
+}
+
+/* ---------- RIDE PAGE: provider dropdown (replaces the earlier dropdown CSS block) ----------
+   1. In style.css, delete the block you pasted from ride-dropdown-additions.css.
+   2. Paste this block in its place (at the bottom of style.css).
+   The white box stays the same as the other boxes. Only the open list is new,
+   and it is styled like the dark name menu in the navbar, but smaller. */
+
+/* number input: hide the small up and down arrows so it matches the other boxes */
+.rp-field input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.rp-field input[type="number"]::-webkit-outer-spin-button,
+.rp-field input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* the part of the box that shows the chosen provider (looks like plain text) */
+.rp-select-btn {
+    flex: 1;
+    min-width: 0;
+    height: 52px;
+    padding: 0 28px 0 0;
+    border: 0;
+    outline: 0;
+    border-radius: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.98rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+
+.rp-select-btn:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+.rp-chev {
+    transition: transform 0.15s ease;
+}
+
+.rp-select[data-open="true"] .rp-chev {
+    transform: rotate(180deg);
+}
+
+/* the small dark list that opens under the box */
+.rp-options {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    margin: 0;
+    padding: 6px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    list-style: none;
+}
+
+.rp-options[hidden] {
+    display: none !important;
+}
+
+.rp-options li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.rp-options li.is-active {
+    background: var(--line);
+}
+
+.rp-options li[aria-selected="true"] {
+    color: var(--green);
+    font-weight: 600;
+}
+
+/* small green tick on the chosen option */
+.rp-options li[aria-selected="true"]::after {
+    content: "";
+    width: 6px;
+    height: 11px;
+    margin-right: 3px;
+    border-right: 2px solid var(--green);
+    border-bottom: 2px solid var(--green);
+    transform: rotate(45deg) translateY(-2px);
+}
+
+/* ---------- STICKY NAVBAR AND PHONE MENU ---------- */
+
+/* When a link jumps to a section, leave room so the sticky bar does not cover the title */
+html {
+    scroll-padding-top: 90px;
+}
+
+/* the bar stays at the top, slightly see-through, with a thin line under it */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(4, 20, 19, 0.78);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+}
+
+/* hamburger button (hidden on desktop) */
+.menu-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.menu-toggle:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+}
+
+.menu-toggle .icon-close {
+    display: none;
+}
+
+.menu-toggle[aria-expanded="true"] .icon-open {
+    display: none;
+}
+
+.menu-toggle[aria-expanded="true"] .icon-close {
+    display: inline;
+}
+
+/* the full-width panel that opens under the bar */
+.mobile-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: calc(100vh - var(--nav-h, 72px));
+    overflow-y: auto;
+    padding: 8px 0 32px;
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+}
+
+@supports (height: 100dvh) {
+    .mobile-panel {
+        height: calc(100dvh - var(--nav-h, 72px));
+    }
+}
+
+.mobile-panel[hidden] {
+    display: none;
+}
+
+.mobile-panel a {
+    display: block;
+    padding: 18px 5%;
+    color: var(--text);
+    font-size: 1.9rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.mobile-panel a:hover {
+    background: var(--surface);
+}
+
+.mobile-panel a.active {
+    color: var(--green);
+}
+
+/* stop the page behind the open menu from scrolling */
+body.menu-open {
+    overflow: hidden;
+}
+
+/* never show the panel on wide screens */
+@media (min-width: 861px) {
+    .mobile-panel {
+        display: none !important;
+    }
+}
+
+/* phones and small tablets */
+@media (max-width: 860px) {
+    .navbar .nav-links {
+        display: none;
+    }
+
+    .menu-toggle {
+        display: grid;
+    }
+
+    .nav-inner {
+        gap: 10px;
+    }
+
+    .navbar .logo {
+        font-size: 1.15rem;
+    }
+
+    .nav-actions {
+        gap: 8px;
+    }
+
+    .nav-actions .icon-btn {
+        display: none;
+    }
+
+    .nav-actions .btn {
+        padding: 9px 14px;
+        font-size: 0.82rem;
+    }
+
+    /* a long name must not push the bar out of shape */
+    .user-btn #userName {
+        max-width: 96px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}

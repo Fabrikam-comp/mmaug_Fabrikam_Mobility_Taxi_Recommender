@@ -1,0 +1,202 @@
+/* Shared fix: the "hidden" attribute must win over .btn / .icon-btn display rules */
+[hidden] {
+    display: none !important;
+}
+
+/* ---------- LOGIN / SIGN UP PAGES ---------- */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.auth-main {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.auth-card {
+    width: min(420px, 100%);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 40px 32px;
+    text-align: center;
+}
+
+.auth-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.auth-logo svg {
+    color: var(--green);
+}
+
+.auth-title {
+    margin-bottom: 8px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.auth-sub {
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.auth-card .btn {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.auth-card .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-msg {
+    min-height: 1.2em;
+    margin-top: 14px;
+    font-size: 0.85rem;
+    color: #ff8a8a;
+}
+
+.auth-switch {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.auth-switch a {
+    color: var(--green);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-footer {
+    border-top: 1px solid var(--line);
+    padding: 20px 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.auth-footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.auth-footer nav {
+    display: flex;
+    gap: 24px;
+}
+
+.auth-footer a {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.auth-footer a:hover,
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- LOGGED-IN NAVBAR MENU ---------- */
+.user-menu {
+    position: relative;
+}
+
+.user-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.user-btn .chev {
+    transition: transform 0.15s ease;
+}
+
+.user-btn[aria-expanded="true"] .chev {
+    transform: rotate(180deg);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 50;
+    min-width: 220px;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.user-item {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.user-item:hover {
+    background: var(--line);
+}
+
+.user-signout {
+    color: #ff8a8a;
+}
+
+.auth-page a:focus-visible,
+.auth-page button:focus-visible,
+.user-btn:focus-visible,
+.user-item:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+}
+
+/* ---------- LOGGED-IN PLACEHOLDER PAGE ---------- */
+.app-placeholder {
+    padding: 64px 0;
+}
+
+.app-placeholder h1 {
+    margin-bottom: 12px;
+    font-size: 2rem;
+}
+
+.app-placeholder p {
+    color: var(--muted);
+}

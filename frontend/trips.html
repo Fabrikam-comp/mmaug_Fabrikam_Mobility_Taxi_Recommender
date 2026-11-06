@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fabrikam | Your trips</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+
+    <div id="siteHeader"></div>
+
+    <main class="trips-page">
+        <div class="container trips-inner">
+            <h1 class="trips-title">Your trips</h1>
+
+            <div class="trips-tabs" role="tablist" aria-label="Filter trips">
+                <button class="trips-tab active" role="tab" aria-selected="true" data-filter="all"
+                    type="button">All</button>
+                <button class="trips-tab" role="tab" aria-selected="false" data-filter="completed"
+                    type="button">Completed</button>
+                <button class="trips-tab" role="tab" aria-selected="false" data-filter="cancelled"
+                    type="button">Cancelled</button>
+            </div>
+
+            <p id="tripsMsg" class="trips-msg" role="status" aria-live="polite"></p>
+            <div id="tripsList" class="trips-list"></div>
+        </div>
+    </main>
+
+    <!-- One blank trip row. trips-page.js copies it for every trip it gets. -->
+    <template id="tripTemplate">
+        <article class="trip-row">
+            <span class="trip-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="30" height="30">
+                    <path fill="currentColor"
+                        d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11h.5a1.5 1.5 0 0 1 1.5 1.5V17a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1v-4.5A1.5 1.5 0 0 1 4.5 11zM8.4 7l-1 3h9.2l-1-3zM6.5 13.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm11 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                </svg>
+            </span>
+            <div class="trip-info">
+                <p class="trip-when"></p>
+                <p class="trip-route">
+                    <span class="trip-from"></span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-label="to">
+                        <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span class="trip-to"></span>
+                </p>
+            </div>
+            <p class="trip-fare"></p>
+            <span class="trip-status"></span>
+        </article>
+    </template>
+
+
+    <script src="javascript/header.js"></script>
+    <script src="javascript/mobile-menu.js"></script>
+    <script src="javascript/vendor/msal-browser.min.js"></script>
+    <script src="javascript/auth-config.js"></script>
+    <script src="javascript/auth.js"></script>
+    <script src="javascript/navbar.js"></script>
+    <script src="javascript/preview-menu.js"></script>
+    <script src="javascript/trips-page.js"></script>
+</body>
+
+</html>
