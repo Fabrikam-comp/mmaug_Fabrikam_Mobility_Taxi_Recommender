@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fabrikam | Go anywhere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="container nav-inner">
+            <a href="#" class="logo">
+                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                    <path fill="currentColor"
+                        d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" />
+                </svg>
+                Fabrikam
+            </a>
+
+            <nav class="nav-links" aria-label="Main">
+                <a href="#" class="active">Home</a>
+                <a href="#how">Ride</a>
+                <a href="#help">About</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="icon-btn" id="accountIcon" aria-label="Account">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path fill="currentColor"
+                            d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-8 2-8 5v1h16v-1c0-3-4-5-8-5z" />
+                    </svg>
+                </button>
+                <button class="btn btn-outline" id="loginBtn">Log in</button>
+                <button class="btn btn-primary" id="signupBtn">Sign up</button>
+
+                <div class="user-menu" id="userMenu" hidden>
+                    <button class="user-btn" id="userBtn" type="button" aria-haspopup="true" aria-expanded="false">
+                        <span id="userName">Account</span>
+                        <svg class="chev" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                            <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown" hidden>
+                        <a href="#" class="user-item">Trips</a>
+                        <a href="#" class="user-item">Manage account</a>
+                        <button class="user-item user-signout" id="signOutBtn" type="button">Sign out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero container">
+            <div class="hero-text">
+                <p class="city">
+                    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                        <path fill="currentColor"
+                            d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" />
+                    </svg>
+                    <span id="cityName">Malta</span>
+                </p>
+
+                <h1>Go anywhere<br>with <span class="accent">Fabrikam</span></h1>
+                <p class="lead">Safe, reliable and affordable rides, all in one place.<br>Book a ride, get a driver, or
+                    request a trip, anytime.</p>
+
+                <form id="rideForm" class="ride-card" novalidate>
+                    <label class="field">
+                        <svg class="field-icon green" viewBox="0 0 24 24" width="18" height="18">
+                            <path fill="currentColor"
+                                d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" />
+                        </svg>
+                        <span class="field-body">
+                            <span class="field-label">Pickup location</span>
+                            <input type="text" id="pickup" placeholder="Enter pickup location" autocomplete="off">
+                        </span>
+                        <button type="button" id="clearPickup" class="field-btn" aria-label="Clear pickup">
+                            <svg viewBox="0 0 24 24" width="18" height="18">
+                                <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
+                                <path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </button>
+                    </label>
+
+                    <label class="field">
+                        <svg class="field-icon" viewBox="0 0 24 24" width="18" height="18">
+                            <path fill="currentColor"
+                                d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" />
+                        </svg>
+                        <span class="field-body">
+                            <span class="field-label">Dropoff location</span>
+                            <input type="text" id="dropoff" placeholder="Enter dropoff location" autocomplete="off">
+                        </span>
+                        <button type="button" id="swapBtn" class="field-btn" aria-label="Swap pickup and dropoff">
+                            <svg viewBox="0 0 24 24" width="18" height="18">
+                                <path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </label>
+
+                    <button type="submit" class="btn btn-primary btn-block">See prices</button>
+                    <p id="formMsg" class="form-msg" role="status" aria-live="polite"></p>
+                </form>
+
+                <div class="hero-links">
+                    <button id="howBtn" class="btn btn-dark">
+                        <svg viewBox="0 0 24 24" width="18" height="18">
+                            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
+                            <path d="M10 8.5l5 3.5-5 3.5z" fill="currentColor" />
+                        </svg>
+                        See how it works
+                    </button>
+                    <a href="#" class="text-link">Log in to check your activity
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero pictures: swap the gradient backgrounds for real photos later (see style.css) -->
+            <div class="hero-gallery">
+                <div class="photo photo-city"></div>
+                <div class="photo photo-safe"><span class="tag"><i class="shield"></i>Safe</span></div>
+                <div class="photo photo-reliable"><span class="tag"><i class="shield"></i>Reliable</span></div>
+                <div class="photo photo-affordable"><span class="tag"><i class="shield"></i>Affordable</span></div>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section id="how" class="how">
+            <div class="container">
+                <h2>How to request a ride</h2>
+                <p class="sub">Get from A to B in just a few taps. It's simple.</p>
+
+                <div class="carousel">
+                    <div class="track" id="track">
+                        <div class="steps-page">
+                            <article class="step">
+                                <div class="step-media">
+                                    <div class="step-img img-1"></div>
+                                    <span class="icon-tile"><svg viewBox="0 0 24 24" width="30" height="30"
+                                            aria-hidden="true">
+                                            <path fill="currentColor"
+                                                d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" />
+                                        </svg></span>
+                                </div>
+                                <h3><span class="num">1</span> Get started</h3>
+                                <p>Enter your pickup and dropoff locations in the app. Choose a ride and confirm.</p>
+                            </article>
+                            <article class="step">
+                                <div class="step-media">
+                                    <div class="step-img img-2"></div>
+                                    <span class="icon-tile"><svg viewBox="0 0 24 24" width="30" height="30"
+                                            aria-hidden="true">
+                                            <path fill="currentColor"
+                                                d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-8 2-8 5v1h16v-1c0-3-4-5-8-5z" />
+                                        </svg></span>
+                                </div>
+                                <h3><span class="num">2</span> Get matched with a driver</h3>
+                                <p>A nearby driver accepts your request. You'll be notified when they're close.</p>
+                            </article>
+                            <article class="step">
+                                <div class="step-media">
+                                    <div class="step-img img-3"></div>
+                                    <span class="icon-tile"><svg viewBox="0 0 24 24" width="30" height="30"
+                                            aria-hidden="true">
+                                            <path fill="currentColor"
+                                                d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3zm-1.2 13l5-5-1.4-1.4-3.6 3.6-1.6-1.6L8.8 12l2 3z" />
+                                        </svg></span>
+                                </div>
+                                <h3><span class="num">3</span> Meet your driver</h3>
+                                <p>Verify your driver's name, vehicle details and your destination, then enter the
+                                    vehicle.</p>
+                            </article>
+                        </div>
+                        <div class="steps-page">
+                            <article class="step">
+                                <div class="step-media">
+                                    <div class="step-img img-4"></div>
+                                    <span class="icon-tile"><svg viewBox="0 0 24 24" width="30" height="30"
+                                            aria-hidden="true">
+                                            <path fill="currentColor"
+                                                d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11v6h-2v-2H7v2H5v-6zm3.2-3l-1 3h9.6l-1-3H8.2zM8 12.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm8 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                                        </svg></span>
+                                </div>
+                                <h3><span class="num">4</span> Enjoy the ride</h3>
+                                <p>Your driver has turn-by-turn directions for the fastest route.</p>
+                            </article>
+                            <article class="step">
+                                <div class="step-media">
+                                    <div class="step-img img-5"></div>
+                                    <span class="icon-tile"><svg viewBox="0 0 24 24" width="30" height="30"
+                                            aria-hidden="true">
+                                            <circle cx="12" cy="12" r="10" fill="currentColor" />
+                                            <path fill="#fff"
+                                                d="M12 6l1.8 4.2L18 12l-4.2 1.8L12 18l-1.8-4.2L6 12l4.2-1.8z" />
+                                        </svg></span>
+                                </div>
+                                <h3><span class="num">5</span> Rate and tip</h3>
+                                <p>Please leave feedback about your trip, and you'll also be able to tip your driver.
+                                </p>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-controls">
+                    <span id="pageCount" aria-live="polite">1/2</span>
+                    <button id="prevBtn" class="round-btn" aria-label="Previous steps" disabled>&lsaquo;</button>
+                    <button id="nextBtn" class="round-btn" aria-label="Next steps">&rsaquo;</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- HELP CENTER -->
+        <section id="help" class="help">
+            <div class="container">
+                <a href="#" class="help-title">Visit Help Center</a>
+
+                <div class="help-grid">
+                    <div class="help-col">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#">About us</a></li>
+                            <li><a href="#">Newsroom</a></li>
+                            <li><a href="#">Investors</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div class="help-col">
+                        <h4>Products</h4>
+                        <ul>
+                            <li><a href="#">Ride</a></li>
+                        </ul>
+                    </div>
+                    <div class="help-col">
+                        <h4>Global citizenship</h4>
+                        <ul>
+                            <li><a href="#">Safety</a></li>
+                            <li><a href="#">Sustainability</a></li>
+                        </ul>
+                    </div>
+                    <div class="help-col">
+                        <h4>Travel</h4>
+                        <ul>
+                            <li><a href="#">Reserve</a></li>
+                            <li><a href="#">Airports</a></li>
+                            <li><a href="#">Hotels</a></li>
+                            <li><a href="#">Cities</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="help-bottom">
+                    <div class="socials">
+                        <a href="#" aria-label="LinkedIn">in</a>
+                        <a href="#" aria-label="YouTube">yt</a>
+                        <a href="#" aria-label="Instagram">ig</a>
+                        <a href="#" aria-label="X">X</a>
+                    </div>
+                    <div class="pills">
+                        <span class="pill">English</span>
+                        <span class="pill">
+                            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                                <path fill="currentColor"
+                                    d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" />
+                            </svg>
+                            <span id="footerCity">Malta</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <script src="javascript/mobile-menu.js"></script>
+    <script src="javascript/vendor/msal-browser.min.js"></script>
+    <script src="javascript/auth-config.js"></script>
+    <script src="javascript/auth.js"></script>
+    <script src="javascript/navbar.js"></script>
+    <script src="javascript/index.js"></script>
+</body>
+
+</html>
