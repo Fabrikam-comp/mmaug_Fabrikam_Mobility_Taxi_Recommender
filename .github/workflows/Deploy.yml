@@ -1,17 +1,26 @@
-name: Deploy to prod
+name: Deploy
 
 # REMINDER
-# Manual trigger only for now.
-# Later, when the Azure secrets are ready push trigger will be added for the main branch.
+# Manual trigger only for now. To run it: Actions tab, Deploy, Run workflow,
+# then pick the main branch. Any other branch is skipped.
+#
+# To turn on automatic deploys later, replace the "on:" block below with:
+#   on:
+#     workflow_dispatch:
+#     push:
+#       branches: [main]
 on:
   workflow_dispatch:
 
 permissions:
+  id-token: write   # lets the job ask GitHub for a login token (OIDC)
   contents: read
-  packages: write
+  packages: write   # lets the job push the image to GitHub Container Registry
 
 jobs:
-  deploy:
+  deploy-api:
+    # Only main may deploy. main always goes to the prod Environment.
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -32,12 +41,85 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: api/Dockerfile
           push: true
           tags: ${{ env.IMAGE }}
+
+      # Passwordless login to Azure with the managed identity (OIDC).
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Copies the GitHub variable CORS_ORIGIN into the web app's own settings,
+      # because the running API cannot see GitHub variables.
+      - name: Set CORS_ORIGIN on the web app
+        env:
+          WEBAPP: ${{ vars.AZURE_WEBAPP_NAME }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          CORS_ORIGIN: ${{ vars.CORS_ORIGIN }}
+        run: |
+          set -euo pipefail
+          test -n "$CORS_ORIGIN"
+          az webapp config appsettings set \
+            --name "$WEBAPP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --settings CORS_ORIGIN="$CORS_ORIGIN" \
+            --output none
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ vars.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: ${{ env.IMAGE }}
+
+      # Red here means the API did not start. The app can take a few minutes.
+      - name: Check the API is healthy
+        env:
+          API_URL: ${{ vars.BACKEND_API_URL }}
+        run: |
+          curl --fail --silent --show-error \
+            --retry 12 --retry-delay 15 --retry-all-errors \
+            "${API_URL}/health"
+
+  deploy-frontend:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      # Swaps the placeholders in auth-config.js for the real values.
+      # Only the copy on this build machine changes, not your repo file.
+      - name: Fill in login settings
+        env:
+          CLIENT_ID: ${{ secrets.AZURE_AD_CLIENTID }}
+          TENANT_ID: ${{ secrets.AZURE_AD_TENANTID }}
+          API_URL: ${{ vars.BACKEND_API_URL }}
+        run: |
+          set -euo pipefail
+          test -n "$CLIENT_ID"
+          test -n "$TENANT_ID"
+          test -n "$API_URL"
+          FILE=frontend/javascript/auth-config.js
+          sed -i \
+            -e "s|PASTE_CLIENT_ID_HERE|${CLIENT_ID}|" \
+            -e "s|PASTE_TENANT_ID_HERE|${TENANT_ID}|" \
+            -e "s|PASTE_BACKEND_API_URL_HERE|${API_URL}|" \
+            "$FILE"
+          if grep -Eq "PASTE_(CLIENT_ID|TENANT_ID|BACKEND_API_URL)_HERE" "$FILE"; then
+            echo "A placeholder was not replaced in $FILE"
+            exit 1
+          fi
+
+      # The frontend is plain HTML, CSS and JavaScript, so there is no build step.
+      - name: Upload frontend to Static Web App
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: "upload"
+          app_location: "frontend"
+          skip_app_build: true
+          skip_api_build: true
