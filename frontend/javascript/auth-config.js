@@ -12,6 +12,8 @@ const AUTH_CONFIG = {
     // Backend API address, with no slash at the end
     apiBaseUrl: "PASTE_BACKEND_API_URL_HERE",
 
+    geoapifyKey: "PASTE_GEOAPIFY_KEY_HERE",
+
     // Where Microsoft sends the user back after login and after sign out.
     // Must match the addresses saved in Azure exactly.
     redirectUri: {

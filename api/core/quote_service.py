@@ -1,4 +1,4 @@
-"""Ask every provider for quotes at the same time (sections 4.3 and 5.4).
+"""Ask every provider for quotes at the same time.
 
 - All providers are called in parallel.
 - Each call has its own timeout (1.5 to 2 s) inside an overall budget (2.5 s).
