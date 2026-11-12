@@ -10,5 +10,7 @@ wheels/
 # Virtual environments
 .venv
 
-# file
+# files
 st.md
+fallback_places_draft.txt
+build_fallback_places.py

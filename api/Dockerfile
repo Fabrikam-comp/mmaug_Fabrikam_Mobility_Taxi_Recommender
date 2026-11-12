@@ -9,6 +9,8 @@ RUN uv sync --locked --no-dev --no-install-project
 
 COPY api ./api
 
+COPY mocks ./mocks
+
 ENV PATH="/app/.venv/bin:$PATH"
 
 RUN useradd --create-home appuser

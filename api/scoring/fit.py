@@ -1,4 +1,4 @@
-"""Step 1 of the recommendation engine: the fit filter (section 5.5).
+"""Step 1 of the recommendation engine: the fit filter.
 
 Vehicles that cannot carry the passengers or the bags are removed. Among the
 rest, an exact fit scores 1.0 and a larger vehicle than needed scores 0.7.

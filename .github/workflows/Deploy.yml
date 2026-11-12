@@ -1,26 +1,71 @@
 name: Deploy
 
 # REMINDER
-# Manual trigger only for now. To run it: Actions tab, Deploy, Run workflow,
-# then pick the main branch. Any other branch is skipped.
+# Deploys automatically when something is pushed to main (a merged pull request).
+# It can still be started by hand: Actions tab, Deploy, Run workflow, pick main.
+# Any other branch is skipped.
 #
-# To turn on automatic deploys later, replace the "on:" block below with:
-#   on:
-#     workflow_dispatch:
-#     push:
-#       branches: [main]
+# Each API deploy restarts the Free plan app and uses CPU minutes, so the API is
+# redeployed only when files that go into it changed (api, mocks, pyproject.toml,
+# uv.lock, .dockerignore or this file). The frontend is redeployed only when the
+# frontend folder or this file changed. A manual run always deploys both.
+#
+# To go back to manual only, delete the "push:" block below.
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 permissions:
   id-token: write   # lets the job ask GitHub for a login token (OIDC)
   contents: read
   packages: write   # lets the job push the image to GitHub Container Registry
 
+# Never run two deploys at the same time.
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
 jobs:
+  # Decides which parts need a deploy, so a frontend-only change does not restart the API.
+  changes:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.diff.outputs.api }}
+      frontend: ${{ steps.diff.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Work out what changed
+        id: diff
+        env:
+          BEFORE: ${{ github.event.before }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          api=true
+          frontend=true
+          # On a push we can compare with the previous commit. In any other case
+          # (manual run, first push, history not found) we deploy everything.
+          if [ "$EVENT" = "push" ] && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            changed="$(git diff --name-only "$BEFORE" "$GITHUB_SHA")"
+            echo "Changed files:"
+            echo "$changed"
+            api=false
+            frontend=false
+            if echo "$changed" | grep -Eq '^(api/|mocks/|pyproject\.toml$|uv\.lock$|\.dockerignore$|\.github/workflows/Deploy\.yml$)'; then api=true; fi
+            if echo "$changed" | grep -Eq '^(frontend/|\.github/workflows/Deploy\.yml$)'; then frontend=true; fi
+          fi
+          echo "api=$api" >> "$GITHUB_OUTPUT"
+          echo "frontend=$frontend" >> "$GITHUB_OUTPUT"
+
   deploy-api:
     # Only main may deploy. main always goes to the prod Environment.
-    if: github.ref_name == 'main'
+    needs: changes
+    if: github.ref_name == 'main' && needs.changes.outputs.api == 'true'
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -29,6 +74,50 @@ jobs:
       # Docker image names must be lowercase, but repo names may have capitals.
       - name: Set lowercase image name
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}:${GITHUB_SHA}" >> "$GITHUB_ENV"
+
+      # Safety net: build the image and start it on the build machine BEFORE
+      # anything is pushed or deployed. A broken import or a missing package
+      # shows up here, not on your live app.
+      - name: Build image for the start-up test
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: api/Dockerfile
+          push: false
+          load: true
+          tags: startup-test:latest
+
+      - name: Start the image and check it answers
+        run: |
+          set -euo pipefail
+          # Fake values: this container is thrown away. AUTH_MODE=token so the
+          # login check is really switched on.
+          docker run -d --name startup-test -p 8000:8000 \
+            -e AUTH_MODE=token \
+            -e AZURE_AD_TENANTID=00000000-0000-0000-0000-000000000000 \
+            -e AZURE_AD_CLIENTID=00000000-0000-0000-0000-000000000001 \
+            -e AUTH_ACCEPT_ACCESS_TOKEN=false \
+            -e AUTH_ACCEPT_ID_TOKEN=true \
+            -e USER_ID_HMAC_KEY=startup-test-key-startup-test-key-0000 \
+            startup-test:latest
+          ok=false
+          for i in $(seq 1 20); do
+            if curl --fail --silent "http://localhost:8000/health" > /dev/null; then ok=true; break; fi
+            sleep 3
+          done
+          if [ "$ok" != "true" ]; then
+            echo "The image did not start. Container log:"
+            docker logs startup-test
+            exit 1
+          fi
+          # A protected route must refuse a call with no token.
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' "http://localhost:8000/trips")"
+          if [ "$code" != "401" ]; then
+            echo "Expected 401 without a token but got $code"
+            docker logs startup-test
+            exit 1
+          fi
+          docker rm -f startup-test
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -53,20 +142,133 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Copies the GitHub variable CORS_ORIGIN into the web app's own settings,
-      # because the running API cannot see GitHub variables.
-      - name: Set CORS_ORIGIN on the web app
+      # Copies GitHub secrets and variables into the web app's own settings,
+      # because the running API cannot see GitHub. All settings go in ONE call,
+      # so the app restarts as few times as possible.
+      # GitHub does not allow secret or variable names that start with GITHUB_,
+      # so the GitHub Models values are saved as GH_MODELS_TOKEN and GH_MODELS_MODEL
+      # and renamed here to the names the API reads.
+      - name: Set app settings on the web app
         env:
           WEBAPP: ${{ vars.AZURE_WEBAPP_NAME }}
           RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
           CORS_ORIGIN: ${{ vars.CORS_ORIGIN }}
+          # Login and user IDs
+          AUTH_MODE: ${{ secrets.AUTH_MODE || vars.AUTH_MODE }}
+          AUTH_ACCEPT_ACCESS_TOKEN: ${{ secrets.AUTH_ACCEPT_ACCESS_TOKEN || vars.AUTH_ACCEPT_ACCESS_TOKEN }}
+          AUTH_ACCEPT_ID_TOKEN: ${{ secrets.AUTH_ACCEPT_ID_TOKEN || vars.AUTH_ACCEPT_ID_TOKEN }}
+          AUTH_REQUIRED_SCOPE: ${{ secrets.AUTH_REQUIRED_SCOPE || vars.AUTH_REQUIRED_SCOPE }}
+          AUTH_API_AUDIENCE: ${{ secrets.AUTH_API_AUDIENCE || vars.AUTH_API_AUDIENCE }}
+          USER_ID_HMAC_KEY: ${{ secrets.USER_ID_HMAC_KEY }}
+          AZURE_AD_TENANTID: ${{ secrets.AZURE_AD_TENANTID }}
+          AZURE_AD_CLIENTID: ${{ secrets.AZURE_AD_CLIENTID }}
+          # Cosmos DB
+          COSMOS_ENDPOINT: ${{ secrets.COSMOS_ENDPOINT }}
+          COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
+          COSMOS_DATABASE: ${{ secrets.COSMOS_DATABASE || vars.COSMOS_DATABASE }}
+          COSMOS_CONTAINER_TRIPS: ${{ secrets.COSMOS_CONTAINER_TRIPS || vars.COSMOS_CONTAINER_TRIPS }}
+          # Place search (OpenStreetMap needs a contact in its User-Agent)
+          GEOCODER_CONTACT: ${{ secrets.GEOCODER_CONTACT }}
+          # Taxi providers (the mocks run inside this same app)
+          BOLT_CLIENT_ID: ${{ secrets.BOLT_CLIENT_ID || vars.BOLT_CLIENT_ID }}
+          BOLT_CLIENT_SECRET: ${{ secrets.BOLT_CLIENT_SECRET || vars.BOLT_CLIENT_SECRET }}
+          UBER_SERVER_TOKEN: ${{ secrets.UBER_SERVER_TOKEN || vars.UBER_SERVER_TOKEN }}
+          ECABS_API_KEY: ${{ secrets.ECABS_API_KEY || vars.ECABS_API_KEY }}
+          BOLT_BASE_URL: ${{ vars.BOLT_BASE_URL }}
+          UBER_BASE_URL: ${{ vars.UBER_BASE_URL }}
+          ECABS_BASE_URL: ${{ vars.ECABS_BASE_URL }}
+          ADAPTERS_ENABLED: ${{ vars.ADAPTERS_ENABLED }}
+          ADAPTER_TIMEOUT_S: ${{ vars.ADAPTER_TIMEOUT_S }}
+          MOCK_ADMIN_KEY: ${{ secrets.MOCK_ADMIN_KEY }}
+          MOCK_FAULT_TIMEOUT_S: ${{ vars.MOCK_FAULT_TIMEOUT_S }}
+          # AI explanations (optional: without them the plain template text is used)
+          AI_ENABLED: ${{ secrets.AI_ENABLED || vars.AI_ENABLED }}
+          AI_TIMEOUT_S: ${{ vars.AI_TIMEOUT_S }}
+          AI_DAILY_CAP_FOUNDRY: ${{ vars.AI_DAILY_CAP_FOUNDRY }}
+          AI_DAILY_CAP_GITHUB: ${{ vars.AI_DAILY_CAP_GITHUB }}
+          FOUNDRY_ENDPOINT: ${{ secrets.FOUNDRY_ENDPOINT }}
+          FOUNDRY_API_KEY: ${{ secrets.FOUNDRY_API_KEY }}
+          FOUNDRY_DEPLOYMENT_NAME: ${{ secrets.FOUNDRY_DEPLOYMENT_NAME || vars.FOUNDRY_DEPLOYMENT_NAME }}
+          GH_MODELS_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}
+          GH_MODELS_MODEL: ${{ secrets.GH_MODELS_MODEL || vars.GH_MODELS_MODEL }}
         run: |
           set -euo pipefail
-          test -n "$CORS_ORIGIN"
+
+          # 1. Stop BEFORE deploying if something the API needs to start is missing.
+          missing=0
+          for name in WEBAPP RESOURCE_GROUP CORS_ORIGIN USER_ID_HMAC_KEY AZURE_AD_TENANTID \
+                      AZURE_AD_CLIENTID COSMOS_ENDPOINT COSMOS_DATABASE COSMOS_CONTAINER_TRIPS; do
+            if [ -z "${!name:-}" ]; then echo "::error::Missing required value: $name"; missing=1; fi
+          done
+          if [ "${AUTH_MODE:-token}" != "token" ]; then
+            echo "::error::AUTH_MODE must be token in production"; missing=1
+          fi
+          if [ "${AUTH_ACCEPT_ACCESS_TOKEN:-true}" != "false" ] && [ -z "${AUTH_REQUIRED_SCOPE:-}" ]; then
+            echo "::error::AUTH_REQUIRED_SCOPE is needed unless AUTH_ACCEPT_ACCESS_TOKEN is false"; missing=1
+          fi
+          if [ -z "${COSMOS_KEY:-}" ]; then
+            echo "::warning::COSMOS_KEY is empty: the API will try its managed identity for Cosmos"
+          fi
+          if [ -z "${GEOCODER_CONTACT:-}" ]; then
+            echo "::warning::GEOCODER_CONTACT is empty: OpenStreetMap searches will carry no contact"
+          fi
+          for name in BOLT_CLIENT_ID BOLT_CLIENT_SECRET UBER_SERVER_TOKEN ECABS_API_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "::warning::$name is empty: that taxi provider will be switched off"
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then exit 1; fi
+
+          # 2. Build the list of settings. Empty values are skipped.
+          settings=()
+          put() { if [ -n "$2" ]; then settings+=("$1=$2"); fi; }
+          put CORS_ORIGIN "$CORS_ORIGIN"
+          put AUTH_MODE "${AUTH_MODE:-token}"
+          put AUTH_ACCEPT_ACCESS_TOKEN "${AUTH_ACCEPT_ACCESS_TOKEN:-}"
+          put AUTH_ACCEPT_ID_TOKEN "${AUTH_ACCEPT_ID_TOKEN:-}"
+          put AUTH_REQUIRED_SCOPE "${AUTH_REQUIRED_SCOPE:-}"
+          put AUTH_API_AUDIENCE "${AUTH_API_AUDIENCE:-}"
+          put USER_ID_HMAC_KEY "$USER_ID_HMAC_KEY"
+          put AZURE_AD_TENANTID "$AZURE_AD_TENANTID"
+          put AZURE_AD_CLIENTID "$AZURE_AD_CLIENTID"
+          put COSMOS_ENDPOINT "$COSMOS_ENDPOINT"
+          put COSMOS_KEY "${COSMOS_KEY:-}"
+          put COSMOS_DATABASE "$COSMOS_DATABASE"
+          put COSMOS_CONTAINER_TRIPS "$COSMOS_CONTAINER_TRIPS"
+          put GEOCODER_CONTACT "${GEOCODER_CONTACT:-}"
+          # Taxi providers. The mocks live in this same app, so each MOCK_ value is a
+          # copy of the matching API value.
+          mocks_url="http://127.0.0.1:8000/mocks"
+          put BOLT_CLIENT_ID "${BOLT_CLIENT_ID:-}"
+          put BOLT_CLIENT_SECRET "${BOLT_CLIENT_SECRET:-}"
+          put UBER_SERVER_TOKEN "${UBER_SERVER_TOKEN:-}"
+          put ECABS_API_KEY "${ECABS_API_KEY:-}"
+          put BOLT_BASE_URL "${BOLT_BASE_URL:-$mocks_url}"
+          put UBER_BASE_URL "${UBER_BASE_URL:-$mocks_url}"
+          put ECABS_BASE_URL "${ECABS_BASE_URL:-$mocks_url}"
+          put ADAPTERS_ENABLED "${ADAPTERS_ENABLED:-}"
+          put ADAPTER_TIMEOUT_S "${ADAPTER_TIMEOUT_S:-}"
+          put MOCK_BOLT_CLIENT_ID "${BOLT_CLIENT_ID:-}"
+          put MOCK_BOLT_CLIENT_SECRET "${BOLT_CLIENT_SECRET:-}"
+          put MOCK_UBER_TOKEN "${UBER_SERVER_TOKEN:-}"
+          put MOCK_ECABS_API_KEY "${ECABS_API_KEY:-}"
+          put MOCK_ADMIN_KEY "${MOCK_ADMIN_KEY:-}"
+          put MOCK_FAULT_TIMEOUT_S "${MOCK_FAULT_TIMEOUT_S:-}"
+          put AI_ENABLED "${AI_ENABLED:-}"
+          put AI_TIMEOUT_S "${AI_TIMEOUT_S:-}"
+          put AI_DAILY_CAP_FOUNDRY "${AI_DAILY_CAP_FOUNDRY:-}"
+          put AI_DAILY_CAP_GITHUB "${AI_DAILY_CAP_GITHUB:-}"
+          put FOUNDRY_ENDPOINT "${FOUNDRY_ENDPOINT:-}"
+          put FOUNDRY_API_KEY "${FOUNDRY_API_KEY:-}"
+          put FOUNDRY_DEPLOYMENT_NAME "${FOUNDRY_DEPLOYMENT_NAME:-}"
+          put GITHUB_MODELS_TOKEN "${GH_MODELS_TOKEN:-}"
+          put GITHUB_MODELS_MODEL "${GH_MODELS_MODEL:-}"
+
+          # 3. Save them. --output none stops az from printing every app setting in the log.
           az webapp config appsettings set \
             --name "$WEBAPP" \
             --resource-group "$RESOURCE_GROUP" \
-            --settings CORS_ORIGIN="$CORS_ORIGIN" \
+            --settings "${settings[@]}" \
             --output none
 
       - name: Deploy to Azure Web App
@@ -85,7 +287,9 @@ jobs:
             "${API_URL}/health"
 
   deploy-frontend:
-    if: github.ref_name == 'main'
+    # Runs after the API job when both run, and never ships a new frontend if the API deploy failed.
+    needs: [changes, deploy-api]
+    if: ${{ !cancelled() && github.ref_name == 'main' && needs.changes.outputs.frontend == 'true' && needs.deploy-api.result != 'failure' }}
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -93,11 +297,12 @@ jobs:
 
       # Swaps the placeholders in auth-config.js for the real values.
       # Only the copy on this build machine changes, not your repo file.
-      - name: Fill in login settings
+      - name: Fill in site settings
         env:
           CLIENT_ID: ${{ secrets.AZURE_AD_CLIENTID }}
           TENANT_ID: ${{ secrets.AZURE_AD_TENANTID }}
           API_URL: ${{ vars.BACKEND_API_URL }}
+          GEOAPIFY_KEY: ${{ secrets.GEOAPIFY_API_KEY }}
         run: |
           set -euo pipefail
           test -n "$CLIENT_ID"
@@ -109,6 +314,13 @@ jobs:
             -e "s|PASTE_TENANT_ID_HERE|${TENANT_ID}|" \
             -e "s|PASTE_BACKEND_API_URL_HERE|${API_URL}|" \
             "$FILE"
+          # The Geoapify key is optional: without it, suggestions while typing stay
+          # off and the search still works when the user presses Enter.
+          if [ -n "${GEOAPIFY_KEY:-}" ]; then
+            sed -i -e "s|PASTE_GEOAPIFY_KEY_HERE|${GEOAPIFY_KEY}|" "$FILE"
+          else
+            echo "::warning::No GEOAPIFY_API_KEY secret: suggestions while typing are off"
+          fi
           if grep -Eq "PASTE_(CLIENT_ID|TENANT_ID|BACKEND_API_URL)_HERE" "$FILE"; then
             echo "A placeholder was not replaced in $FILE"
             exit 1

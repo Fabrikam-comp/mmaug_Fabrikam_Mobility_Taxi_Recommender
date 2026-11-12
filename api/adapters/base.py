@@ -1,4 +1,4 @@
-"""The interface every provider adapter must follow (section 5.3)."""
+"""The interface every provider adapter must follow."""
 
 from typing import Protocol
 

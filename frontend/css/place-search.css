@@ -1,0 +1,37 @@
+/* Suggestion list for place-search.js. Colours are plain defaults, change them to match your design. */
+.place-search {
+    position: relative;
+}
+
+.place-search-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    margin: 4px 0 0;
+    padding: 4px 0;
+    max-height: 260px;
+    overflow-y: auto;
+    list-style: none;
+    background: #ffffff;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.place-search-list[hidden] {
+    display: none;
+}
+
+.place-search-list li {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: #111111;
+    cursor: pointer;
+}
+
+.place-search-list li:hover,
+.place-search-list li.is-active {
+    background: #f1f1f1;
+}
