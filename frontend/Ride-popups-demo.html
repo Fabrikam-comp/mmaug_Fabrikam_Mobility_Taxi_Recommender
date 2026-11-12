@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ride popups preview</title>
+    <link rel="stylesheet" href="css/ride-popups.css">
+    <style>
+        /* Preview page only. Not needed in ride.html. */
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            background: #061611;
+            color: #eaf7f1;
+            padding: 24px;
+        }
+
+        .demo-bar {
+            display: grid;
+            gap: 12px;
+            max-width: 420px;
+        }
+
+        .demo-bar button {
+            font: inherit;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #1f5a48;
+            background: #0e2c24;
+            color: #eaf7f1;
+            cursor: pointer;
+        }
+
+        .demo-bar label {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-bar">
+        <h1>Ride popups preview</h1>
+        <button type="button" id="demo-open">Open results with sample data</button>
+        <button type="button" id="demo-empty">Open with no options</button>
+        <label><input type="checkbox" id="demo-fail"> The first booking try fails (to test retry)</label>
+        <p id="demo-log">The idempotency key is printed here.</p>
+    </div>
+
+    <!-- ===== COPY FROM HERE into ride.html (just before </body>) ===== -->
+    <div class="rp-overlay" id="rp-overlay" hidden>
+        <div class="rp-dialog" id="rp-dialog" role="dialog" aria-modal="true" tabindex="-1">
+
+            <!-- Step 1: results -->
+            <section class="rp-step" id="rp-step-results" aria-labelledby="rp-title-results">
+                <header class="rp-head">
+                    <span class="rp-head-icon" data-icon="car"></span>
+                    <h2 id="rp-title-results" tabindex="-1">Your ride options</h2>
+                    <button type="button" class="rp-close" data-rp-close aria-label="Close"><span
+                            data-icon="close"></span></button>
+                </header>
+                <p class="rp-route"><span data-icon="pin"></span><span id="rp-from"></span><span class="rp-arrow"
+                        aria-hidden="true">&rarr;</span><span id="rp-to"></span></p>
+                <div id="rp-banners"></div>
+                <div id="rp-recommended"></div>
+                <div class="rp-explain" id="rp-explain" hidden>
+                    <span data-icon="spark"></span>
+                    <div>
+                        <h3>Why we recommend this <span class="rp-pill rp-ai" id="rp-explain-ai"
+                                hidden>AI-generated</span></h3>
+                        <p id="rp-explain-text"></p>
+                    </div>
+                </div>
+                <h3 class="rp-section-title" id="rp-others-title" hidden>Other options</h3>
+                <div id="rp-others"></div>
+                <div class="rp-center"><button type="button" class="rp-link" id="rp-more-toggle" aria-expanded="false"
+                        hidden>See all options <span data-icon="chevron"></span></button></div>
+                <div id="rp-more" hidden></div>
+                <footer class="rp-foot">
+                    <span data-icon="info"></span>
+                    <span>Prices are simulated. Nothing is charged and no driver is sent.<br>&copy; OpenStreetMap
+                        contributors</span>
+                </footer>
+            </section>
+
+            <!-- Step 2: confirm -->
+            <section class="rp-step" id="rp-step-confirm" aria-labelledby="rp-title-confirm" hidden>
+                <header class="rp-head">
+                    <span class="rp-head-icon" data-icon="calendar"></span>
+                    <h2 id="rp-title-confirm" tabindex="-1">Confirm your booking</h2>
+                    <button type="button" class="rp-close" data-rp-close aria-label="Close"><span
+                            data-icon="close"></span></button>
+                </header>
+                <div class="rp-summary" id="rp-confirm-summary"></div>
+                <span class="rp-label" id="rp-pay-label">Payment:</span>
+                <div role="radiogroup" aria-labelledby="rp-pay-label">
+                    <label class="rp-radio"><input type="radio" name="rp-pay" value="CARD_SIMULATED" checked><span
+                            class="rp-dot"></span><span class="rp-pay-label"><span data-icon="card"></span>Card
+                            (simulated)</span></label>
+                    <label class="rp-radio"><input type="radio" name="rp-pay" value="CASH"><span
+                            class="rp-dot"></span><span class="rp-pay-label"><span
+                                data-icon="cash"></span>Cash</span></label>
+                </div>
+                <label class="rp-check"><input type="checkbox" id="rp-confirm-check"><span class="rp-box"><span
+                            data-icon="tick"></span></span><span>I confirm this booking</span></label>
+                <div id="rp-confirm-error" role="alert"></div>
+                <div class="rp-actions">
+                    <button type="button" class="rp-btn" id="rp-cancel">Cancel</button>
+                    <button type="button" class="rp-btn rp-primary" id="rp-confirm" disabled>Confirm booking</button>
+                </div>
+            </section>
+
+            <!-- Step 3: done -->
+            <section class="rp-step rp-done" id="rp-step-done" aria-labelledby="rp-title-done" hidden>
+                <header class="rp-head"><span style="flex:1"></span>
+                    <button type="button" class="rp-close" data-rp-close aria-label="Close"><span
+                            data-icon="close"></span></button>
+                </header>
+                <svg class="rp-checkmark" viewBox="0 0 100 100" aria-hidden="true">
+                    <circle cx="50" cy="50" r="40"></circle>
+                    <path d="M32 52 L45 65 L69 38"></path>
+                </svg>
+                <h2 id="rp-title-done" tabindex="-1">Booking confirmed</h2>
+                <div class="rp-summary">
+                    <div class="rp-ref">Reference: <strong id="rp-done-ref"></strong></div>
+                    <div id="rp-done-summary"></div>
+                </div>
+                <p class="rp-sim-note"><span data-icon="info"></span><span id="rp-done-note">Simulated. Nothing was
+                        charged.</span></p>
+                <div class="rp-actions">
+                    <button type="button" class="rp-btn" id="rp-view-trips">View my trips</button>
+                    <button type="button" class="rp-btn rp-primary" data-rp-close>Close</button>
+                </div>
+            </section>
+
+        </div>
+    </div>
+    <!-- ===== COPY UNTIL HERE ===== -->
+
+    <script src="javascript/ride-popups.js"></script>
+    <script>
+        /* Preview page only: fake data and a fake booking call. */
+        function sampleData() {
+            var soon = new Date(Date.now() + 54000).toISOString();
+            function opt(id, provider, price, eta, quote, status) {
+                return {
+                    option: {
+                        providerId: provider, adapterVersion: "1", dataSource: "SIMULATED", vehicleClass: "STANDARD", seats: 4, bagCapacity: 2,
+                        price: { status: status || "AVAILABLE", amountEur: price }, pickupEtaMin: eta, journeyMin: 14, quoteId: quote, expiresAt: soon, providerStatus: "OK"
+                    },
+                    score: price === null ? null : { proximity: 28, fit: 30, preference: 12.5, price: 9, total: 79.5 },
+                    recommended: provider === "mock-bolt",
+                    convertedPrice: price === null ? null : { currency: "GBP", amount: Math.round(price * 0.86 * 100) / 100, rateDate: "2026-11-11", label: "" }
+                };
+            }
+            var bolt = opt(1, "mock-bolt", 14.5, 3, "b1"), uber = opt(2, "mock-uber", 12.0, 6, "u1"), none = opt(3, "mock-ecabs", null, 9, "e1", "UNAVAILABLE");
+            return {
+                quoteSetId: "demo-set", currency: "GBP", topOptions: [bolt, uber, none], allOptions: [bolt, uber, none,
+                    opt(4, "mock-uber", 21.9, 8, "u2")],
+                providers: [{ providerId: "mock-bolt", name: "Bolt", status: "OK", reason: null, retryAfterS: null },
+                { providerId: "mock-uber", name: "Uber", status: "OK", reason: null, retryAfterS: null },
+                { providerId: "mock-ecabs", name: "eCabs", status: "UNAVAILABLE", reason: "TIMEOUT", retryAfterS: null }],
+                currencyNotice: null
+            };
+        }
+        var tries = 0;
+        RidePopups.configure({
+            book: function (req) {
+                document.getElementById("demo-log").textContent = "Idempotency-Key: " + req.idempotencyKey;
+                tries += 1;
+                return new Promise(function (resolve, reject) {
+                    setTimeout(function () {
+                        if (document.getElementById("demo-fail").checked && tries === 1) {
+                            var e = new Error("provider down"); e.code = "PROVIDER_UNAVAILABLE"; e.retryAfter = 5; reject(e); return;
+                        }
+                        resolve({
+                            reference: "FAB-7K3Q9", status: "CONFIRMED", providerId: "mock-bolt", vehicleClass: "STANDARD", priceEur: 14.5,
+                            pickupName: "Near Valletta", destinationName: "Near Sliema", alreadyBooked: false
+                        });
+                    }, 700);
+                });
+            },
+            loadExplanation: function () {
+                return new Promise(function (resolve) { setTimeout(function () { resolve({ text: "Bolt is recommended because it can pick you up soonest (3 min).", source: "AI" }); }, 900); });
+            },
+            onViewTrips: function () { alert("Go to trips page"); },
+            onSearchAgain: function () { alert("Search again"); }
+        });
+        document.getElementById("demo-open").onclick = function () { tries = 0; RidePopups.showResults(sampleData(), { pickupLabel: "Valletta", destinationLabel: "Sliema" }); };
+        document.getElementById("demo-empty").onclick = function () {
+            RidePopups.showResults({
+                quoteSetId: null, currency: "EUR", topOptions: [], allOptions: [], providers: [
+                    { providerId: "mock-bolt", name: "Bolt", status: "UNAVAILABLE", reason: "CIRCUIT_OPEN", retryAfterS: null }], currencyNotice: null
+            },
+                { pickupLabel: "Valletta", destinationLabel: "Sliema" });
+        };
+    </script>
+</body>
+
+</html>

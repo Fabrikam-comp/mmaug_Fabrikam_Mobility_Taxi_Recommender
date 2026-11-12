@@ -1,4 +1,4 @@
-"""Steps 2 and 3 of the recommendation engine: score and rank (section 5.5).
+"""Steps 2 and 3 of the recommendation engine: score and rank.
 
 Each option gets 0 to 100 points:
   proximity (pickup ETA) 30, vehicle fit 30, provider preference 25, price 15.

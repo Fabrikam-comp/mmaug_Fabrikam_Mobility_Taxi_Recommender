@@ -1,4 +1,4 @@
-"""Circuit breaker (section 5.4).
+"""Circuit breaker.
 
 Opens after 5 failures in a row, or when half of the last 20 calls failed.
 While open, calls are skipped instantly. After 30 seconds one trial call is
