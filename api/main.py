@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.wiring import include_routes, lifespan
-from config import get_allowed_origins
+from api.config import get_allowed_origins
 from mocks.main import app as mocks_app
 
 app = FastAPI(title="Fabrikam Taxi Recommender API", lifespan=lifespan)
