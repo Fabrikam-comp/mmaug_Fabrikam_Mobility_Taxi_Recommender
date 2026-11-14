@@ -38,7 +38,7 @@
         <div class="container nav-inner">
             <a href="index.html" class="logo">
                 <img src="images/logo.png" alt="Fabrikam logo" class="logo-img">
-                Fabrikam
+                MMAUG-Taxi-Recommender
             </a>
 
             <nav class="nav-links" aria-label="Main">
