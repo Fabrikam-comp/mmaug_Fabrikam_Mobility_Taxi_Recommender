@@ -1,9 +1,5 @@
-/* API client: the one place that talks to the backend.
-   - adds the API address (AUTH_CONFIG.apiBaseUrl) and "Authorization: Bearer <ID token>"
-   - gets a fresh ID token from Auth.getIdToken() (see auth-add-getIdToken.js)
-   - on a 401 it refreshes the token and tries once more, then sends the user to login
-   - turns every API error into an ApiError with: status, code, message, details, retryAfter
-   Tokens are never logged or stored here. */
+/* API client: the one place that talks to the backend.*/
+
 
 const LOGIN_URL = "login.html"; // where to send the user when the session cannot be renewed
 const TIMEOUT_MS = 30000; // the Free plan app can be slow to wake up

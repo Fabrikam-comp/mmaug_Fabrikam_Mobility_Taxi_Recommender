@@ -412,3 +412,27 @@ function currencyChoice() {
 document.addEventListener("ridepopup:searchagain", () => {
     if (pickup) pickup.focus();
 });
+
+// ---------- 7. FILL THE FORM FROM THE LINK ----------
+
+window.addEventListener("load", () => {
+    const params = new URLSearchParams(window.location.search);
+    const from = (params.get("pickup") || "").trim();
+    const to = (params.get("dropoff") || "").trim();
+    if (!from && !to) return;
+
+    const jobs = [];
+    if (from) {
+        pickup.value = from;
+        jobs.push(resolvePlace("pickup"));
+    }
+    if (to) {
+        dropoff.value = to;
+        jobs.push(resolvePlace("dropoff"));
+    }
+
+    showMessage("Checking the places...", true);
+    Promise.all(jobs)
+        .then(() => showMessage("", true))
+        .catch((error) => showMessage(friendlyError(error), false));
+});

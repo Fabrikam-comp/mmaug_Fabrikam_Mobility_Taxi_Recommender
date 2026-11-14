@@ -1752,3 +1752,47 @@ body.menu-open {
     height: 32px;
     width: auto;
 }
+
+/* ---------- DEMO NOTICE (shared, added by demo-notice.js) ---------- */
+.demo-notice-row {
+    grid-column: 1 / -1;
+    /* if the hero is a grid: take the whole first row */
+    flex: 0 0 100%;
+    /* if the hero is a wrapping flex row: take its own line */
+    margin-bottom: 14px;
+}
+
+.demo-notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 12px;
+    width: fit-content;
+    max-width: 100%;
+    padding: 8px 16px;
+    border: 1px solid rgba(34, 224, 161, 0.35);
+    border-radius: 999px;
+    background: rgba(34, 224, 161, 0.08);
+    color: #d7efe6;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.demo-notice a {
+    color: #22e0a1;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.demo-notice a:hover {
+    text-decoration-thickness: 2px;
+}
+
+@media (max-width: 600px) {
+    .demo-notice {
+        border-radius: 14px;
+        font-size: 0.8rem;
+    }
+}
