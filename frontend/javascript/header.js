@@ -15,9 +15,9 @@
     const NAV_LINKS = [
         { label: "Home", href: "app.html" },
         { label: "Ride", href: "ride.html" },
-        { label: "About", href: "#" },
+        { label: "About", href: "#", id: "navAboutBtn" },
         { label: "Trips", href: "trips.html" },
-        { label: "Help", href: "#" },
+        { label: "Help", href: "#", id: "navHelpBtn" },
     ];
 
     // Which page are we on? "ride.html" and "ride" both become "ride".
@@ -63,7 +63,6 @@
                     </button>
                     <div class="user-dropdown" id="userDropdown" hidden>
                         <a href="trips.html" class="user-item">Trips</a>
-                        <a href="#" class="user-item">Manage account</a>
                         <button class="user-item user-signout" id="signOutBtn" type="button">Sign out</button>
                     </div>
                 </div>

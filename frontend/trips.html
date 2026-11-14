@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <title>Fabrikam | Your trips</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +14,7 @@
     <link rel="stylesheet" href="css/auth.css">
 </head>
 
-<body>
+<body data-protected>
 
     <div id="siteHeader"></div>
 
@@ -66,6 +67,7 @@
     <script src="javascript/vendor/msal-browser.min.js"></script>
     <script src="javascript/auth-config.js"></script>
     <script src="javascript/auth.js"></script>
+    <script type="module" src="javascript/api-client.js"></script>
     <script src="javascript/navbar.js"></script>
     <script src="javascript/preview-menu.js"></script>
     <script src="javascript/trips-page.js"></script>

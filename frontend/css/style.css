@@ -315,19 +315,20 @@ h1 {
 
 .photo-city {
     grid-row: 1 / 4;
-    background-image: linear-gradient(180deg, #f1a37a 0%, #b58aa6 35%, #3a6f8f 65%, #1d4a3a 100%);
+    background-image: url("../images/city.jpg");
 }
 
 .photo-safe {
-    background-image: linear-gradient(135deg, #2b4a45, #6f8f6a);
+    background-image: url("../images/airport.jpg");
 }
 
 .photo-reliable {
-    background-image: linear-gradient(135deg, #5d7a76, #c9d3cf);
+    background-image: url("../images/meet-your-driver.jpg");
 }
 
 .photo-affordable {
-    background-image: linear-gradient(135deg, #7a5a3d, #3c5a4a);
+    background-image: url("../images/get-matched.jpg");
+    ;
 }
 
 /* To use real photos, replace the gradients above, for example:
@@ -408,23 +409,23 @@ h2 {
 }
 
 .img-1 {
-    background-image: linear-gradient(135deg, #3b3a36, #8a8f8c);
+    background-image: url("../images/get-started.jpg");
 }
 
 .img-2 {
-    background-image: linear-gradient(135deg, #2f4a3a, #8a7f6a);
+    background-image: url("../images/get-matched.jpg");
 }
 
 .img-3 {
-    background-image: linear-gradient(135deg, #1b2b2a, #4f7a3a);
+    background-image: url("../images/meet-your-driver.jpg");
 }
 
 .img-4 {
-    background-image: linear-gradient(135deg, #7a4a2d, #c9a27a);
+    background-image: url("../images/get-matched.jpg");
 }
 
 .img-5 {
-    background-image: linear-gradient(135deg, #2f5a2a, #8ab06a);
+    background-image: url("../images/get-started.jpg");
 }
 
 /* To use real photos: .img-1 { background-image: url("images/step1.jpg"); } */
@@ -1550,4 +1551,197 @@ body.menu-open {
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+}
+
+/* AXIOMAT AI WIDGET */
+.axiomat-trigger {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #4ade9c;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(74, 222, 156, 0.35);
+    color: #0d1f16;
+    cursor: pointer;
+    z-index: 999;
+}
+
+.axiomat-panel {
+    position: fixed;
+    bottom: 84px;
+    right: 20px;
+    width: 340px;
+    max-height: 480px;
+    background: #0a0a0a;
+    border: 0.5px solid #262626;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    z-index: 998;
+}
+
+.axiomat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: linear-gradient(180deg, #0f1f18, #0a0a0a);
+    border-bottom: 0.5px solid #262626;
+}
+
+.axiomat-header-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.axiomat-bot-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #4ade9c;
+    color: #0d1f16;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.axiomat-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: #f2f0ea;
+}
+
+.axiomat-close {
+    background: none;
+    border: none;
+    color: #a3a39d;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.axiomat-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.axiomat-msg {
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 9px 12px;
+    border-radius: 10px;
+    max-width: 85%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.axiomat-msg-bot {
+    background: #141414;
+    border: 0.5px solid #2e2e2e;
+    color: #e5e5e0;
+    align-self: flex-start;
+}
+
+.axiomat-msg-user {
+    background: #132821;
+    color: #4ade9c;
+    align-self: flex-end;
+}
+
+.axiomat-prompts {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.axiomat-prompts-label {
+    font-size: 9.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #6a6a66;
+    margin: 4px 0 2px;
+}
+
+.axiomat-prompt-btn {
+    text-align: left;
+    background: #141414;
+    border: 0.5px solid #2e2e2e;
+    color: #c9c9c4;
+    font-size: 11.5px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.axiomat-prompt-btn:hover {
+    border-color: #4ade9c;
+    color: #4ade9c;
+}
+
+.axiomat-input-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 12px;
+    border-top: 0.5px solid #262626;
+}
+
+.axiomat-input-bar textarea {
+    flex: 1;
+    background: #141414;
+    border: 0.5px solid #2e2e2e;
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: #f2f0ea;
+    font-size: 12px;
+    font-family: inherit;
+    resize: none;
+    max-height: 130px;
+    overflow-y: auto;
+}
+
+.axiomat-input-bar textarea::placeholder {
+    color: #6a6a66;
+}
+
+.axiomat-send {
+    background: #4ade9c;
+    color: #0d1f16;
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Mobile: full-screen takeover, sitting below the nav bar */
+@media (max-width: 640px) {
+    .axiomat-panel {
+        top: 0;
+        /* adjust to match your actual nav bar height */
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        max-height: none;
+        border-radius: 0;
+    }
+}
+
+.axiomat-panel[hidden] {
+    display: none;
 }
