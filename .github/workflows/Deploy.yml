@@ -87,6 +87,18 @@ jobs:
           load: true
           tags: startup-test:latest
 
+      - name: Check every module in the image can be imported
+        run: |
+          docker run --rm --entrypoint python \
+            -e AUTH_MODE=token \
+            -e AZURE_AD_TENANTID=00000000-0000-0000-0000-000000000000 \
+            -e AZURE_AD_CLIENTID=00000000-0000-0000-0000-000000000001 \
+            -e AUTH_ACCEPT_ACCESS_TOKEN=false \
+            -e AUTH_ACCEPT_ID_TOKEN=true \
+            -e USER_ID_HMAC_KEY=startup-test-key-startup-test-key-0000 \
+            startup-test:latest \
+            -c 'import aiohttp, importlib, pathlib; [importlib.import_module(".".join(p.with_suffix("").parts)) for p in sorted(pathlib.Path("api").rglob("*.py")) if p.name != "__init__.py"]'    
+
       - name: Start the image and check it answers
         run: |
           set -euo pipefail
@@ -277,14 +289,44 @@ jobs:
           app-name: ${{ vars.AZURE_WEBAPP_NAME }}
           images: ${{ env.IMAGE }}
 
+            # The health check cannot pass while the app is stopped, so look at its state first.
+      - name: Make sure the web app is running
+        env:
+          WEBAPP: ${{ vars.AZURE_WEBAPP_NAME }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+        run: |
+          set -euo pipefail
+          state="$(az webapp show --name "$WEBAPP" --resource-group "$RESOURCE_GROUP" --query state --output tsv || echo unknown)"
+          echo "Web app state: $state"
+          if [ "$state" = "QuotaExceeded" ]; then
+            echo "::error::The Free plan quota is used up. Starting will not help. Wait for the reset at midnight UTC."
+            exit 1
+          fi
+          if [ "$state" = "Stopped" ]; then
+            echo "The app was stopped, starting it."
+            az webapp start --name "$WEBAPP" --resource-group "$RESOURCE_GROUP" --output none
+          fi    
+
       # Red here means the API did not start. The app can take a few minutes.
       - name: Check the API is healthy
+        id: health
         env:
           API_URL: ${{ vars.BACKEND_API_URL }}
         run: |
           curl --fail --silent --show-error \
             --retry 12 --retry-delay 15 --retry-all-errors \
             "${API_URL}/health"
+
+      # A crashing container restarts again and again and uses up the Free plan quota,
+      # even overnight. If the API is not healthy after a deploy, stop the app.
+      - name: Stop the app if it is not healthy
+        if: ${{ failure() && steps.health.outcome == 'failure' }}
+        env:
+          WEBAPP: ${{ vars.AZURE_WEBAPP_NAME }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+        run: |
+          az webapp stop --name "$WEBAPP" --resource-group "$RESOURCE_GROUP" --output none
+          echo "::error::The API did not become healthy, so the web app was stopped to protect the quota. Fix the cause, then press Start."      
 
   deploy-frontend:
     # Runs after the API job when both run, and never ships a new frontend if the API deploy failed.

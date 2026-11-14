@@ -113,5 +113,22 @@ const Auth = (() => {
                 "Account"
             );
         },
+
+        // Returns a fresh ID token for the signed-in user, or null if nobody is signed in.
+        async getIdToken(forceRefresh = false) {
+            await (readyPromise || Auth.init());
+            const account = getAccount();
+            if (!account) return null;
+            try {
+                const result = await msalInstance.acquireTokenSilent({
+                    ...loginRequest,
+                    account,
+                    forceRefresh,
+                });
+                return result.idToken || null;
+            } catch (error) {
+                return null; // the session cannot be renewed quietly: the caller sends the user to login
+            }
+        },
     };
 })();

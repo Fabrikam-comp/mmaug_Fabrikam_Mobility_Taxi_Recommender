@@ -1,33 +1,17 @@
 // trips-page.js
 // Only for trips.html.
 // Job: get the trips from the backend, draw one row per trip, filter by tab.
-// No sample data lives here. Until TRIPS_API_URL is filled in, the page
-// shows a "not connected yet" message.
 
-// ---------- 1. SETTINGS (fill these in when the backend is ready) ----------
-
-// The address of your trips endpoint, for example "https://your-api.example.com/trips".
-const TRIPS_API_URL = "";
-
-// The ONLY place that knows the backend's field names.
-// If your backend uses different names, change them here and nothing else.
 function normalizeTrip(raw) {
     return {
-        id: raw.id,
-        requestedAt: raw.requestedAt, // a date and time text like "2026-11-04T09:42:00Z"
-        pickup: raw.pickup,           // text
-        dropoff: raw.dropoff,         // text
-        fare: raw.fare,               // a number
-        currency: raw.currency,       // like "EUR" or "NGN"
-        status: String(raw.status || "").toLowerCase(), // "completed" or "cancelled"
+        id: raw.reference,
+        requestedAt: raw.createdAt,
+        pickup: raw.pickupName,
+        dropoff: raw.destinationName,
+        fare: raw.priceEur,
+        currency: "EUR", //
+        status: String(raw.status || "").toLowerCase(),
     };
-}
-
-// Later, when your API needs the login token, return it here, like
-// { Authorization: "Bearer <token>" }. auth.js has no token method yet,
-// so for now this sends nothing extra.
-async function getAuthHeaders() {
-    return {};
 }
 
 // ---------- 2. PAGE ELEMENTS ----------
@@ -78,7 +62,6 @@ function formatFare(fare, currency) {
             return new Intl.NumberFormat("en", {
                 style: "currency",
                 currency: currency,
-                maximumFractionDigits: 0,
             }).format(fare);
         } catch (error) {
             // unknown currency code, fall through to the plain number
@@ -132,18 +115,15 @@ function renderTrips() {
 // ---------- 5. LOADING FROM THE BACKEND ----------
 
 async function loadTrips() {
-    if (!TRIPS_API_URL) {
-        showMessage("Trips are not connected yet. They will show here once the backend is ready.");
+    if (!window.ApiClient) {
+        showMessage("The page could not reach the API helper. Please reload the page.");
         return;
     }
 
     showMessage("Loading your trips...");
 
     try {
-        const response = await fetch(TRIPS_API_URL, { headers: await getAuthHeaders() });
-        if (!response.ok) throw new Error("Server answered " + response.status);
-
-        const data = await response.json();
+        const data = await window.ApiClient.apiRequest("/trips");
         if (!Array.isArray(data)) throw new Error("Expected a list of trips");
 
         allTrips = data.map(normalizeTrip);
@@ -172,4 +152,4 @@ tabs.forEach((tab) => {
     });
 });
 
-loadTrips();
+window.addEventListener("DOMContentLoaded", loadTrips);
