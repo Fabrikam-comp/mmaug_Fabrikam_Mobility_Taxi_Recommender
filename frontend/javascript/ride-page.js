@@ -1,11 +1,11 @@
 // ride-page.js
 // Only for ride.html.
 // Job: run the custom provider dropdown, check the form, turn the typed places
-// into map positions, and start the search. The results window (ride-popups.js)
+// into map positions, show them on the map, and start the search. The results window (ride-popups.js)
 // shows the answer and handles booking.
 //
 // Needs these scripts on the page, in this order:
-//   auth-config.js, auth.js, place-search.js (optional), ride-page.js,
+//   leaflet.js (the map library), auth-config.js, auth.js, place-search.js (optional), ride-page.js,
 //   then the two modules: api-client.js and ride-popups.js
 
 // ---------- 1. SETTINGS ----------
@@ -22,6 +22,10 @@ const PROVIDER_IDS = { bolt: "mock-bolt", uber: "mock-uber", ecabs: "mock-ecabs"
 const MAX_PASSENGERS = 8;
 const MAX_BAGS = 6;
 
+// Where the map starts (the middle of Malta) and how far it is zoomed in.
+const MALTA_CENTRE = [35.9375, 14.3754];
+const MALTA_ZOOM = 11;
+
 // ---------- 2. PAGE ELEMENTS ----------
 
 const rideForm = document.getElementById("rideForm");
@@ -34,6 +38,7 @@ const swapBtn = document.getElementById("swapBtn");
 const formMsg = document.getElementById("formMsg");
 const currencyField = document.getElementById("currency"); // optional
 const submitBtn = rideForm ? rideForm.querySelector('[type="submit"]') : null;
+const mapElement = document.getElementById("rideMap");
 
 const fields = { pickup: pickup, dropoff: dropoff };
 
@@ -44,6 +49,64 @@ function showMessage(text, ok) {
 
 function normalise(text) {
     return String(text).trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+// ---------- 2B. MAP ----------
+// Leaflet draws the map. The "L" object comes from leaflet.js.
+// If the map element or the library is missing, the map is skipped
+// and the rest of the page still works.
+
+let map = null;
+const markers = { pickup: null, dropoff: null }; // the pins on the map, or null
+
+if (mapElement && typeof L !== "undefined") {
+    map = L.map(mapElement).setView(MALTA_CENTRE, MALTA_ZOOM);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+}
+
+// Zoom so that all pins are visible.
+function fitMap() {
+    if (!map) return;
+    const pins = [markers.pickup, markers.dropoff].filter(Boolean);
+    if (pins.length === 0) {
+        map.setView(MALTA_CENTRE, MALTA_ZOOM);
+    } else if (pins.length === 1) {
+        map.setView(pins[0].getLatLng(), 15);
+    } else {
+        map.fitBounds(L.latLngBounds(pins.map((pin) => pin.getLatLng())), { padding: [50, 50] });
+    }
+}
+
+// Put a pin at the position. If the pin already exists, move it.
+function showMarker(kind, position) {
+    if (!map) return;
+    const latLng = [position.lat, position.lon];
+    if (markers[kind]) {
+        markers[kind].setLatLng(latLng);
+    } else {
+        markers[kind] = L.marker(latLng).addTo(map);
+        markers[kind].bindTooltip(kind === "pickup" ? "Pickup" : "Dropoff");
+    }
+    fitMap();
+}
+
+// Take the pin off the map.
+function hideMarker(kind) {
+    if (!map || !markers[kind]) return;
+    map.removeLayer(markers[kind]);
+    markers[kind] = null;
+    fitMap();
+}
+
+// Draw the pins again from what is stored in "chosen" (used after a swap).
+function redrawMarkers() {
+    ["pickup", "dropoff"].forEach((kind) => {
+        if (chosen[kind]) showMarker(kind, chosen[kind]);
+        else hideMarker(kind);
+    });
 }
 
 // ---------- 3. PLACES ----------
@@ -69,9 +132,11 @@ function remember(kind, place) {
     const coordinates = readCoordinates(place);
     if (!coordinates) {
         chosen[kind] = null;
+        hideMarker(kind);
         return;
     }
     chosen[kind] = { lat: coordinates.lat, lon: coordinates.lon, text: null };
+    showMarker(kind, coordinates);
     // The suggestion list writes its text into the field a moment later.
     setTimeout(() => {
         if (chosen[kind] && chosen[kind].text === null) chosen[kind].text = normalise(fields[kind].value);
@@ -82,7 +147,10 @@ function remember(kind, place) {
 Object.keys(fields).forEach((kind) => {
     fields[kind].addEventListener("input", () => {
         const entry = chosen[kind];
-        if (entry && entry.text !== null && entry.text !== normalise(fields[kind].value)) chosen[kind] = null;
+        if (entry && entry.text !== null && entry.text !== normalise(fields[kind].value)) {
+            chosen[kind] = null;
+            hideMarker(kind);
+        }
     });
 });
 
@@ -118,6 +186,7 @@ function resolvePlace(kind) {
             // Keep the answer only if the user has not changed the text meanwhile.
             if (normalise(input.value) === asked) {
                 chosen[kind] = { lat: coordinates.lat, lon: coordinates.lon, text: asked };
+                showMarker(kind, coordinates);
             }
             return coordinates;
         })
@@ -142,6 +211,7 @@ if (typeof PlaceSearch !== "undefined" && typeof PlaceSearch.attach === "functio
             onSelect: (place) => remember(kind, place),
             onClear: () => {
                 chosen[kind] = null;
+                hideMarker(kind);
             },
             onEnter: () => {
                 if (!fields[kind].value.trim()) return;
@@ -164,6 +234,7 @@ if (swapBtn) {
         chosen.dropoff = tempPlace;
         resolving.pickup = null;
         resolving.dropoff = null;
+        redrawMarkers();
     });
 }
 
