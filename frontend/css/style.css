@@ -1294,6 +1294,8 @@ h2 {
     border-radius: 20px;
     background: var(--green-dark);
     overflow: hidden;
+    position: relative;
+    z-index: 0;
 }
 
 /* tablets and phones */
@@ -1744,4 +1746,9 @@ body.menu-open {
 
 .axiomat-panel[hidden] {
     display: none;
+}
+
+.logo-img {
+    height: 32px;
+    width: auto;
 }
