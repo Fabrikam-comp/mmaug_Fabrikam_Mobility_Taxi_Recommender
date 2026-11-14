@@ -45,9 +45,9 @@ if (rideForm) {
             return;
         }
 
-        formMsg.classList.add("ok");
-        formMsg.textContent = "Looking for rides from " + from + " to " + to + "...";
-        // Later, this is where you would call your backend API.
+        window.location.href =
+            "ride.html?pickup=" + encodeURIComponent(from) +
+            "&dropoff=" + encodeURIComponent(to);
     });
 }
 

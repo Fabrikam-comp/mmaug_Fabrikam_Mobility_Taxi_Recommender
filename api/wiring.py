@@ -1,12 +1,3 @@
-"""Builds every shared piece once at start-up, and closes them at shutdown.
-
-In main.py you only need two changes:
-    from api.wiring import include_routes, lifespan
-    app = FastAPI(..., lifespan=lifespan)     # add lifespan=lifespan to your existing line
-    include_routes(app)                       # right after the app is created
-Your existing /health route stays where it is.
-"""
-
 import logging
 import os
 from contextlib import asynccontextmanager

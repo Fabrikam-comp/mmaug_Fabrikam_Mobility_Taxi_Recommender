@@ -1,16 +1,5 @@
 name: Deploy
 
-# REMINDER
-# Deploys automatically when something is pushed to main (a merged pull request).
-# It can still be started by hand: Actions tab, Deploy, Run workflow, pick main.
-# Any other branch is skipped.
-#
-# Each API deploy restarts the Free plan app and uses CPU minutes, so the API is
-# redeployed only when files that go into it changed (api, mocks, pyproject.toml,
-# uv.lock, .dockerignore or this file). The frontend is redeployed only when the
-# frontend folder or this file changed. A manual run always deploys both.
-#
-# To go back to manual only, delete the "push:" block below.
 on:
   workflow_dispatch:
   push:
@@ -97,7 +86,7 @@ jobs:
             -e AUTH_ACCEPT_ID_TOKEN=true \
             -e USER_ID_HMAC_KEY=startup-test-key-startup-test-key-0000 \
             startup-test:latest \
-            -c 'import aiohttp, importlib, pathlib; [importlib.import_module(".".join(p.with_suffix("").parts)) for p in sorted(pathlib.Path("api").rglob("*.py")) if p.name != "__init__.py"]'    
+            -c 'import aiohttp, azure.identity.aio, importlib, pathlib; [importlib.import_module(".".join(p.with_suffix("").parts)) for p in sorted(pathlib.Path("api").rglob("*.py")) if p.name != "__init__.py"]'    
 
       - name: Start the image and check it answers
         run: |
@@ -154,12 +143,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Copies GitHub secrets and variables into the web app's own settings,
-      # because the running API cannot see GitHub. All settings go in ONE call,
-      # so the app restarts as few times as possible.
-      # GitHub does not allow secret or variable names that start with GITHUB_,
-      # so the GitHub Models values are saved as GH_MODELS_TOKEN and GH_MODELS_MODEL
-      # and renamed here to the names the API reads.
+      # Copies GitHub secrets and variables into the web app's own settings
       - name: Set app settings on the web app
         env:
           WEBAPP: ${{ vars.AZURE_WEBAPP_NAME }}
@@ -193,6 +177,10 @@ jobs:
           ADAPTER_TIMEOUT_S: ${{ vars.ADAPTER_TIMEOUT_S }}
           MOCK_ADMIN_KEY: ${{ secrets.MOCK_ADMIN_KEY }}
           MOCK_FAULT_TIMEOUT_S: ${{ vars.MOCK_FAULT_TIMEOUT_S }}
+          # Chatbot (Foundry agent). Plain values, not secrets.
+          FOUNDRY_AGENT_RESPONSES_URL: ${{ vars.FOUNDRY_AGENT_RESPONSES_URL }}
+          CHAT_DAILY_CAP: ${{ vars.CHAT_DAILY_CAP }}
+          CHAT_TIMEOUT_S: ${{ vars.CHAT_TIMEOUT_S }}
           # AI explanations (optional: without them the plain template text is used)
           AI_ENABLED: ${{ secrets.AI_ENABLED || vars.AI_ENABLED }}
           AI_TIMEOUT_S: ${{ vars.AI_TIMEOUT_S }}
@@ -248,6 +236,9 @@ jobs:
           put COSMOS_DATABASE "$COSMOS_DATABASE"
           put COSMOS_CONTAINER_TRIPS "$COSMOS_CONTAINER_TRIPS"
           put GEOCODER_CONTACT "${GEOCODER_CONTACT:-}"
+          put FOUNDRY_AGENT_RESPONSES_URL "${FOUNDRY_AGENT_RESPONSES_URL:-}"
+          put CHAT_DAILY_CAP "${CHAT_DAILY_CAP:-}"
+          put CHAT_TIMEOUT_S "${CHAT_TIMEOUT_S:-}"
           # Taxi providers. The mocks live in this same app, so each MOCK_ value is a
           # copy of the matching API value.
           mocks_url="http://127.0.0.1:8000/mocks"
