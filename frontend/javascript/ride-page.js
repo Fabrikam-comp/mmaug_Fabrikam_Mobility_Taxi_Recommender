@@ -63,6 +63,7 @@ if (mapElement && typeof L !== "undefined") {
     map = L.map(mapElement).setView(MALTA_CENTRE, MALTA_ZOOM);
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
+        referrerPolicy: "origin",
         attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 }

@@ -37,7 +37,7 @@
     <header class="navbar">
         <div class="container nav-inner">
             <a href="index.html" class="logo">
-                <img src="image/logo.png" alt="Fabrikam logo" class="logo-img">
+                <img src="images/logo.png" alt="Fabrikam logo" class="logo-img">
                 Fabrikam
             </a>
 
