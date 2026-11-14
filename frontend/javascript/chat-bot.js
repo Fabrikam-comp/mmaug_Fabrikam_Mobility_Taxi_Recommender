@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ===== Settings: change these for your project =====
-    const CHAT_URL = 'https://YOUR-BACKEND-URL/chat';
+    const CHAT_URL = (typeof AUTH_CONFIG !== 'undefined' && AUTH_CONFIG.apiBaseUrl && !AUTH_CONFIG.apiBaseUrl.startsWith('PASTE_'))
+        ? AUTH_CONFIG.apiBaseUrl + '/chat'
+        : '';
 
     // ===== Site navigation (general website features) =====
     const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -91,6 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ message, sessionId }),
             });
 
+            if (response.status === 429) {
+                thinkingMsg.remove();
+                addMessage('You are sending messages quickly. Please wait a moment and try again.', 'bot');
+                return;
+            }
             if (!response.ok) {
                 throw new Error(`Server replied with status ${response.status}`);
             }
