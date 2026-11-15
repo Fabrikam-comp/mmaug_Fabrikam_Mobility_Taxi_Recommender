@@ -8,7 +8,7 @@
 (function () {
     "use strict";
 
-    var NOTICE_TEXT = `MMAUG-Taxi-Recommender is a solution built as part of the malta Microsoft AI user Group(MMAUG) AI & DevOps Fundamentals Bootcamp 2026. The solution is for demo/educational purpose and not to be adopted as a producyion ready system`
+    var NOTICE_TEXT = `MMAUG-Taxi-Recommender is a solution built as part of the Malta Microsoft AI user Group(MMAUG) AI & DevOps Fundamentals Bootcamp 2026. The solution is for demo/educational purpose and not to be adopted as a production ready system`
     var REPO_URL = "https://github.com/Fabrikam-comp/mmaug_Fabrikam_Mobility_Taxi_Recommender";
     var LINK_TEXT = "Check-Repo";
 
