@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         axiomatInput.value = '';
         axiomatInput.style.height = 'auto';
 
-        const thinkingMsg = addMessage('Axiomat AI is thinking...', 'bot');
+        const thinkingMsg = addMessage('mmaug Agent is thinking...', 'bot');
         thinkingMsg.classList.add('axiomat-thinking');
 
         try {
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             thinkingMsg.remove();
             addMessage(data.reply || 'Sorry, I did not get a reply. Please try again.', 'bot');
         } catch (error) {
-            console.error('Axiomat AI request failed:', error);
+            console.error('mmaug AI request failed:', error);
             thinkingMsg.remove();
             addMessage("Sorry, I'm having trouble connecting right now. Please try again.", 'bot');
         } finally {
